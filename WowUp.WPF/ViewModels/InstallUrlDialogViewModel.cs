@@ -14,7 +14,6 @@ namespace WowUp.WPF.ViewModels
     public class InstallUrlDialogViewModel : BaseViewModel
     {
         private readonly IAddonService _addonService;
-        private readonly IAnalyticsService _analyticsService;
 
         private Window _window;
         public Window Window
@@ -98,12 +97,9 @@ namespace WowUp.WPF.ViewModels
         public Command SubmitCommand { get; set; }
         public Command InstallCommand { get; set; }
 
-        public InstallUrlDialogViewModel(
-            IAddonService addonService,
-            IAnalyticsService analyticsService)
+        public InstallUrlDialogViewModel(IAddonService addonService)
         {
             _addonService = addonService;
-            _analyticsService = analyticsService;
 
             Title = "Install Addon URL";
             EnableImportButton = true;
@@ -150,8 +146,6 @@ namespace WowUp.WPF.ViewModels
 
             try
             {
-                await _analyticsService.TrackUserAction("Addons", "InstallByUrlImport", $"{ClientType}|{ImportedAddon.Name}");
-
                 await _addonService.InstallAddon(ImportedAddon, ClientType);
 
                 IsInstalled = true;
@@ -193,8 +187,6 @@ namespace WowUp.WPF.ViewModels
 
             try
             {
-                await _analyticsService.TrackUserAction("Addons", "ImportAddonUrl", $"{ClientType}|{input}");
-                
                 ImportedAddon = await _addonService.GetAddonByUri(uri, ClientType);
 
                 if (ImportedAddon == null)

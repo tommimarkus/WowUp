@@ -24,7 +24,6 @@ namespace WowUp.WPF.ViewModels
         private readonly IWarcraftService _warcraftService;
         private readonly IWowUpService _wowUpService;
         private readonly IPreferenceRepository _preferenceRepository;
-        private readonly IAnalyticsService _analyticsService;
         private readonly ISessionService _sessionService;
 
         public ObservableCollection<WowClientType> WowClientTypes { get; set; }
@@ -138,7 +137,6 @@ namespace WowUp.WPF.ViewModels
         public ApplicationUpdateControlViewModel ApplicationUpdateControlViewModel { get; set; }
 
         public MainWindowViewModel(
-            IAnalyticsService analyticsService,
             IMigrationService migrationService,
             IPreferenceRepository preferenceRepository,
             IServiceProvider serviceProvider,
@@ -146,7 +144,6 @@ namespace WowUp.WPF.ViewModels
             IWarcraftService warcraftService,
             IWowUpService wowUpService)
         {
-            _analyticsService = analyticsService;
             _preferenceRepository = preferenceRepository;
             _serviceProvider = serviceProvider;
             _sessionService = sessionService;
@@ -246,9 +243,6 @@ namespace WowUp.WPF.ViewModels
 
         public async void OnLoaded()
         {
-            _analyticsService.PromptTelemetry();
-            await _analyticsService.TrackStartup();
-
             Version = $"v{AppUtilities.LongVersionName}";
 
             _sessionService.AppLoaded();

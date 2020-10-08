@@ -12,7 +12,6 @@ namespace WowUp.WPF.ViewModels
     public class PotentialAddonListItemViewModel : BaseViewModel
     {
         private readonly IAddonService _addonService;
-        private readonly IAnalyticsService _analyticsService;
 
         public WowClientType ClientType { get; set; }
 
@@ -114,12 +113,9 @@ namespace WowUp.WPF.ViewModels
         public Command OpenLinkCommand { get; set; }
         public Command InstallCommand { get; set; }
 
-        public PotentialAddonListItemViewModel(
-            IAddonService addonService,
-            IAnalyticsService analyticsService)
+        public PotentialAddonListItemViewModel(IAddonService addonService)
         {
             _addonService = addonService;
-            _analyticsService = analyticsService;
 
             OpenLinkCommand = new Command(() => ExternalUrl.OpenUrlInBrowser());
             InstallCommand = new Command(() => OnInstall());
@@ -132,8 +128,6 @@ namespace WowUp.WPF.ViewModels
             try
             {
                 await _addonService.InstallAddon(Addon, ClientType, OnInstallUpdate);
-
-                await _analyticsService.TrackUserAction("Addons", "InstallFeaturedAddon", $"{ClientType}|{Addon.Name}");
             }
             catch (Exception ex)
             {

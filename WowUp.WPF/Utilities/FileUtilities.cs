@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Ingestion.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Serilog;
 using System.Linq;
-using System.Security;
-using System.Security.Permissions;
 using System.Threading.Tasks;
 
 namespace WowUp.WPF.Utilities
@@ -50,8 +50,9 @@ namespace WowUp.WPF.Utilities
                 File.WriteAllText(testPath, string.Empty);
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Serilog.Log.Error(ex, "Write access check failed");
                 return false;
             }
             finally

@@ -345,15 +345,6 @@
                                 Select Stable for a cleaner less buggy build. Select Beta to see the next wave of features as they come.
                         </TextBlock>
                     </StackPanel>
-                    <!--TELEMETRY-->
-                    <Label FontWeight="Bold" Grid.Row="1" Grid.Column="0" Margin="0 5" HorizontalAlignment="Right">Telemetry</Label>
-                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0 5" Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsTelemetryEnabled, Mode=TwoWay}"
-                                          VerticalAlignment="Center"
-                                      Command="{Binding TelemetryCheckCommand}" Grid.Row="0" Grid.Column="1">
-                        </CheckBox>
-                        <Label VerticalAlignment="Top">Help improve WowUp by sending anonymous install data and/or errors.</Label>
-                    </StackPanel>
                     <!--MINIMIZE ON CLOSE-->
                     <Label FontWeight="Bold" Grid.Row="2" Grid.Column="0" Margin="0 5" HorizontalAlignment="Right">Minimize on close</Label>
                     <StackPanel Grid.Row="2" Grid.Column="1" Margin="0 5" Orientation="Horizontal">

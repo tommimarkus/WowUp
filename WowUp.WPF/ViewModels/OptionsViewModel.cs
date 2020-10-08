@@ -11,7 +11,6 @@ namespace WowUp.WPF.ViewModels
 {
     public class OptionsViewModel : BaseViewModel
     {
-        private readonly IAnalyticsService _analyticsService;
         private readonly IServiceProvider _serviceProvider;
         private readonly IWarcraftService _warcraftService;
         private readonly IWowUpService _wowUpService;
@@ -49,13 +48,6 @@ namespace WowUp.WPF.ViewModels
         {
             get => _wowBetaLocation;
             set { SetProperty(ref _wowBetaLocation, value); }
-        }
-
-        private bool _isTelemetryEnabled;
-        public bool IsTelemetryEnabled
-        {
-            get => _isTelemetryEnabled;
-            set { SetProperty(ref _isTelemetryEnabled, value); }
         }
 
         private bool _collapseToTrayEnabled;
@@ -143,7 +135,6 @@ namespace WowUp.WPF.ViewModels
         }
 
         public Command ShowLogsCommand { get; set; }
-        public Command TelemetryCheckCommand { get; set; }
         public Command CollapseToTrayCheckCommand { get; set; }
         public Command SetRetailLocationCommand { get; set; }
         public Command SetRetailPtrLocationCommand { get; set; }
@@ -171,18 +162,15 @@ namespace WowUp.WPF.ViewModels
         public ObservableCollection<WowUpReleaseChannelType> WowUpChannelNames { get; set; }
 
         public OptionsViewModel(
-            IAnalyticsService analyticsService,
             IServiceProvider serviceProvider,
             IWarcraftService warcraftService,
             IWowUpService wowUpService)
         {
-            _analyticsService = analyticsService;
             _serviceProvider = serviceProvider;
             _warcraftService = warcraftService;
             _wowUpService = wowUpService;
 
             ShowLogsCommand = new Command(() => ShowLogsFolder());
-            TelemetryCheckCommand = new Command(() => OnTelemetryChange());
             CollapseToTrayCheckCommand = new Command(() => OnCollapseToTrayChanged());
             SetRetailLocationCommand = new Command(() => OnSetLocation(WowClientType.Retail));
             SetRetailPtrLocationCommand = new Command(() => OnSetLocation(WowClientType.RetailPtr));
@@ -222,7 +210,6 @@ namespace WowUp.WPF.ViewModels
 
         private void LoadOptions()
         {
-            IsTelemetryEnabled = _analyticsService.IsTelemetryEnabled();
             CollapseToTrayEnabled = _wowUpService.GetCollapseToTray();
             SelectedWowUpReleaseChannelType = _wowUpService.GetWowUpReleaseChannel();
 
@@ -248,11 +235,6 @@ namespace WowUp.WPF.ViewModels
         private void ShowLogsFolder()
         {
             _wowUpService.ShowLogsFolder();
-        }
-
-        private void OnTelemetryChange()
-        {
-            _analyticsService.SetTelemetryEnabled(IsTelemetryEnabled);
         }
 
         private void OnCollapseToTrayChanged()

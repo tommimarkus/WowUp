@@ -23,16 +23,13 @@ namespace WowUp.WPF.AddonProviders
         private const string ApiUrl = "https://api.mmoui.com/v4/game/WOW";
         private const string AddonUrl = "https://www.wowinterface.com/downloads/info";
 
-        private readonly IAnalyticsService _analyticsService;
         private readonly ICacheService _cacheService;
 
         public string Name => "WowInterface";
 
         public WowInterfaceAddonProvider(
-            IAnalyticsService analyticsService,
             ICacheService cacheService)
         {
-            _analyticsService = analyticsService;
             _cacheService = cacheService;
         }
 
@@ -223,7 +220,7 @@ namespace WowUp.WPF.AddonProviders
             }
             catch (Exception ex)
             {
-                _analyticsService.Track(ex, $"GetAddonSearchResult {response.Id}");
+                Log.Error(ex, $"GetAddonSearchResult {response.Id}");
                 return default;
             }
         }

@@ -34,7 +34,6 @@ namespace WowUp.WPF
         private static readonly Mutex singleton = new Mutex(true, "WowUp.io");
 
         private readonly ServiceProvider _serviceProvider;
-        private readonly IAnalyticsService _analyticsService;
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -67,7 +66,6 @@ namespace WowUp.WPF
             ConfigureServices(serviceCollection);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
-            _analyticsService = _serviceProvider.GetRequiredService<IAnalyticsService>();
         }
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -113,7 +111,6 @@ namespace WowUp.WPF
             services.AddSingleton<MainWindow>();
 
             services.AddSingleton<IAddonService, AddonService>();
-            services.AddSingleton<IAnalyticsService, AnalyticsService>();
             services.AddSingleton<ICacheService, CacheService>();
             services.AddSingleton<IDownloadService, DownloadService>();
             services.AddSingleton<IMigrationService, MigrationService>();
@@ -129,14 +126,12 @@ namespace WowUp.WPF
 
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            _analyticsService.Track(e.Exception, true);
             Log.Error(e.Exception, "Uncaught Exception");
             Log.Error($"Terminating");
         }
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            _analyticsService.Track(e.Exception, true);
             Log.Error(e.Exception, "Uncaught Exception");
             Log.Error($"Terminating");
         }
@@ -144,7 +139,6 @@ namespace WowUp.WPF
         private void ExceptionHandler(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
-            _analyticsService.Track(e, true);
 
             Log.Error(e, "Uncaught Exception");
             Log.Error($"Terminating {args.IsTerminating}");

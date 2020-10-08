@@ -22,7 +22,6 @@ namespace WowUp.WPF.ViewModels
         private static readonly object ClientNamesLock = new object();
         private static readonly object DisplayAddonsLock = new object();
 
-        private readonly IAnalyticsService _analyticsService;
         private readonly IServiceProvider _serviceProvider;
         private readonly IWarcraftService _warcraftService;
         private readonly IAddonService _addonService;
@@ -240,14 +239,12 @@ namespace WowUp.WPF.ViewModels
         public ObservableCollection<WowClientType> ClientTypeNames { get; set; }
 
         public AddonsViewViewModel(
-            IAnalyticsService analyticsService,
             IServiceProvider serviceProvider,
             IAddonService addonService,
             IWarcraftService warcraftService,
             ISessionService sessionService)
         {
             _addonService = addonService;
-            _analyticsService = analyticsService;
             _warcraftService = warcraftService;
             _serviceProvider = serviceProvider;
             _sessionService = sessionService;
@@ -370,7 +367,7 @@ namespace WowUp.WPF.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    _analyticsService.Track(ex, "Failed during bulk install");
+                    Log.Error(ex, "Failed during bulk install");
                 }
             });
 
@@ -378,11 +375,6 @@ namespace WowUp.WPF.ViewModels
             EnableUpdateAll = CanUpdateAll;
             EnableRefresh = true;
             EnableRescan = true;
-
-            await _analyticsService.TrackUserAction(
-                "Addons", 
-                "ReInstallBulk", 
-                _selectedAddons.Count().ToString());
         }
 
         public async Task UninstallAll()
@@ -418,11 +410,6 @@ namespace WowUp.WPF.ViewModels
             EnableUpdateAll = CanUpdateAll;
             EnableRefresh = true;
             EnableRescan = true;
-
-            await _analyticsService.TrackUserAction(
-                "Addons",
-                "UninstallBulk",
-                _selectedAddons.Count().ToString());
         }
 
         public void OnDataGridSelectionChange(

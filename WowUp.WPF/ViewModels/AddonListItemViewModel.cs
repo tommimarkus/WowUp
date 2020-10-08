@@ -16,7 +16,6 @@ namespace WowUp.WPF.ViewModels
     public class AddonListItemViewModel : BaseViewModel
     {
         private readonly IAddonService _addonService;
-        private readonly IAnalyticsService _analyticsService;
         private readonly SolidColorBrush _rareBrush;
         private readonly SolidColorBrush _epicBrush;
 
@@ -257,13 +256,10 @@ namespace WowUp.WPF.ViewModels
         public bool CanInstall => _addon.CanInstall();
         public bool CanUpdate => _addon.CanUpdate();
 
-        public AddonListItemViewModel(
-            IAddonService addonService,
-            IAnalyticsService analyticsService)
+        public AddonListItemViewModel(IAddonService addonService)
             : base()
         {
             _addonService = addonService;
-            _analyticsService = analyticsService;
 
             OpenFolderCommand = new Command(() => addonService.GetFullInstallPath(Addon).OpenUrlInBrowser());
             InstallCommand = new Command(async () => await InstallAddon());
@@ -350,8 +346,6 @@ namespace WowUp.WPF.ViewModels
             try
             {
                 await _addonService.InstallAddon(_addon.Id, OnInstallUpdate);
-
-                await _analyticsService.TrackUserAction("Addons", "InstallScanned", _addon.Name);
             }
             catch (Exception ex)
             {
@@ -393,11 +387,6 @@ namespace WowUp.WPF.ViewModels
             _addon.IsIgnored = !_addon.IsIgnored;
             _addonService.UpdateAddon(_addon);
             SetupDisplayState();
-
-            if (_addon.IsIgnored)
-            {
-                _analyticsService.TrackUserAction("Addons", "Ignore", _addon.Name);
-            }
         }
 
         private void OnAutoUpdateChanged()
@@ -405,11 +394,6 @@ namespace WowUp.WPF.ViewModels
             _addon.AutoUpdateEnabled = !_addon.AutoUpdateEnabled;
             _addonService.UpdateAddon(_addon);
             SetupDisplayState();
-
-            if (_addon.AutoUpdateEnabled)
-            {
-                _analyticsService.TrackUserAction("Addons", "AutoUpdate", _addon.Name);
-            }
         }
 
         private void OnChannelChanged(AddonChannelType channelType)
@@ -419,8 +403,6 @@ namespace WowUp.WPF.ViewModels
             _addonService.UpdateAddon(_addon);
 
             SetupDisplayState();
-
-            _analyticsService.TrackUserAction("Addons", "Channel", channelType.ToString());
         }
 
         public void OnInstallUpdate(AddonInstallState installState, decimal percent)
@@ -440,7 +422,7 @@ namespace WowUp.WPF.ViewModels
                     SetupDisplayState();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error("Failed to handle addon install event", ex);
             }

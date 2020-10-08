@@ -37,7 +37,6 @@ namespace WowUp.WPF.Services
 
         protected readonly IAddonRepository _addonRepository;
 
-        protected readonly IAnalyticsService _analyticsService;
         protected readonly IDownloadService _downloadService;
         protected readonly IWarcraftService _warcraftService;
         protected readonly IWowUpService _wowUpService;
@@ -54,14 +53,12 @@ namespace WowUp.WPF.Services
         public AddonService(
             IServiceProvider serviceProvider,
             IAddonRepository addonRepository,
-            IAnalyticsService analyticsService,
             IDownloadService downloadSevice,
             IWarcraftService warcraftService,
             IWowUpService wowUpService)
         {
             _addonRepository = addonRepository;
 
-            _analyticsService = analyticsService;
             _downloadService = downloadSevice;
             _warcraftService = warcraftService;
             _wowUpService = wowUpService;
@@ -113,7 +110,7 @@ namespace WowUp.WPF.Services
                     }
                     catch(Exception ex)
                     {
-                        _analyticsService.Track(ex, "Failed to install addon");
+                        Log.Error(ex, "Failed to install addon");
                     }
                 }
             }
@@ -152,8 +149,6 @@ namespace WowUp.WPF.Services
             var searchTasks = _providers.Select(p => p.Search(query, clientType));
             var searchResults = await Task.WhenAll(searchTasks);
 
-            await _analyticsService.TrackUserAction("Addons", "Search", $"{clientType}|{query}");
-
             return searchResults.SelectMany(res => res).OrderByDescending(res => res.DownloadCount).ToList();
         }
 
@@ -183,7 +178,7 @@ namespace WowUp.WPF.Services
             }
             catch(Exception ex)
             {
-                _analyticsService.Track(ex, $"Failed to get addons for client {clientType}");
+                Log.Error(ex, $"Failed to get addons for client {clientType}");
                 return new List<Addon>();
             }
         }
@@ -244,7 +239,7 @@ namespace WowUp.WPF.Services
             }
             catch (Exception ex)
             {
-                _analyticsService.Track(ex, "Failed to sync addons");
+                Log.Error(ex, "Failed to sync addons");
                 return false;
             }
         }
@@ -455,13 +450,11 @@ namespace WowUp.WPF.Services
 
                 _addonRepository.UpdateItem(addon);
 
-                await _analyticsService.TrackUserAction("Addons", "InstallById", $"{addon.ClientType}|{addon.Name}");
-
                 AddonInstalled?.Invoke(this, new AddonEventArgs(addon, AddonChangeType.Installed));
             }
             catch (Exception ex)
             {
-                _analyticsService.Track(ex, "InstallAddon");
+                Log.Error(ex, "InstallAddon");
             }
             finally
             {
@@ -506,7 +499,7 @@ namespace WowUp.WPF.Services
             }
             catch(Exception ex)
             {
-                _analyticsService.Track(ex, $"Failed to download thumbnail {addon.Name}");
+                Log.Error(ex, $"Failed to download thumbnail {addon.Name}");
             }
         }
 
@@ -572,7 +565,7 @@ namespace WowUp.WPF.Services
                     }
                     catch (Exception ex)
                     {
-                        _analyticsService.Track(ex, $"Failed to copy addon directory {unzipLocation}");
+                        Log.Error(ex, $"Failed to copy addon directory {unzipLocation}");
                         // If a backup directory exists, attempt to roll back
                         if (Directory.Exists(unzipBackupLocation))
                         {
@@ -626,7 +619,7 @@ namespace WowUp.WPF.Services
                 }
                 catch(Exception ex)
                 {
-                    _analyticsService.Track(ex, $"Addon scan failed {provider.Name}");
+                    Log.Error(ex, $"Addon scan failed {provider.Name}");
                 }
             }
 

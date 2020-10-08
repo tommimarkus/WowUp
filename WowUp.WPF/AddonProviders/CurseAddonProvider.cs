@@ -29,15 +29,12 @@ namespace WowUp.WPF.AddonProviders
         private const string RetailGameVersionFlavor = "wow_retail";
 
         private readonly ICacheService _cacheService;
-        private readonly IAnalyticsService _analyticsService;
 
         public string Name => "Curse";
 
         public CurseAddonProvider(
-            IAnalyticsService analyticsService,
             ICacheService cacheService)
         {
-            _analyticsService = analyticsService;
             _cacheService = cacheService;
         }
 
@@ -81,7 +78,7 @@ namespace WowUp.WPF.AddonProviders
                 }
                 catch (Exception ex)
                 {
-                    _analyticsService.Track(ex, $"Failed to create addon for result {scanResult.FolderScanner.Fingerprint}");
+                    Log.Error(ex, $"Failed to create addon for result {scanResult.FolderScanner.Fingerprint}");
                 }
             }
         }
@@ -430,7 +427,7 @@ namespace WowUp.WPF.AddonProviders
             }
             catch (Exception ex)
             {
-                _analyticsService.Track(ex, "GetAddonSearchResult");
+                Log.Error(ex, "GetAddonSearchResult");
                 return null;
             }
         }
@@ -497,7 +494,7 @@ namespace WowUp.WPF.AddonProviders
             }
             catch (Exception ex)
             {
-                _analyticsService.Track(ex, "GetAllIds");
+                Log.Error(ex, "GetAllIds");
 
                 return new List<CurseSearchResult>();
             }
@@ -516,7 +513,7 @@ namespace WowUp.WPF.AddonProviders
             }
             catch (Exception ex)
             {
-                _analyticsService.Track(ex, "GetSearchResults");
+                Log.Error(ex, "GetSearchResults");
 
                 return new List<CurseSearchResult>();
             }
@@ -548,7 +545,7 @@ namespace WowUp.WPF.AddonProviders
             }
             catch (Exception ex)
             {
-                _analyticsService.Track(ex, "GetSearchResults");
+                Log.Error(ex, "GetSearchResults");
                 return new List<CurseSearchResult>();
             }
         }

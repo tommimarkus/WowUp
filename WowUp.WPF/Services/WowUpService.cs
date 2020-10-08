@@ -32,7 +32,6 @@ namespace WowUp.WPF.Services
         private static bool UpdaterExists => File.Exists(UpdaterPath);
         private static FileVersionInfo UpdaterVersion => FileUtilities.GetFileVersion(UpdaterPath);
 
-        private readonly IAnalyticsService _analyticsService;
         private readonly ICacheService _cacheService;
         private readonly IDownloadService _downloadService;
         private readonly IPreferenceRepository _preferenceRepository;
@@ -66,13 +65,11 @@ namespace WowUp.WPF.Services
         public event WowUpPreferenceEventHandler PreferenceUpdated;
 
         public WowUpService(
-            IAnalyticsService analyticsService,
             ICacheService cacheService,
             IDownloadService downloadService,
             IPreferenceRepository preferenceRepository,
             IWowUpApiService wowUpApiService)
         {
-            _analyticsService = analyticsService;
             _cacheService = cacheService;
             _downloadService = downloadService;
             _preferenceRepository = preferenceRepository;
@@ -95,7 +92,6 @@ namespace WowUp.WPF.Services
         public void SetCollapseToTray(bool enabled)
         {
             SetPreference(Constants.Preferences.CollapseToTrayKey, enabled.ToString());
-            _analyticsService.TrackUserAction("WowUp", "CollapseToTray", enabled.ToString());
         }
 
         public WowUpReleaseChannelType GetWowUpReleaseChannel()
@@ -134,7 +130,6 @@ namespace WowUp.WPF.Services
         {
             var preferenceKey = GetClientDefaultAutoUpdateKey(clientType);
             SetPreference(preferenceKey, autoUpdate.ToString());
-            _analyticsService.TrackUserAction("WowUp", $"ClientDefaultAutoUpdate|{clientType}", autoUpdate.ToString());
         }
 
         public bool GetClientDefaultAutoUpdate(WowClientType clientType)
@@ -148,7 +143,6 @@ namespace WowUp.WPF.Services
         {
             var preferenceKey = GetClientDefaultAddonChannelKey(clientType);
             SetPreference(preferenceKey, channelType.ToString());
-            _analyticsService.TrackUserAction("WowUp", $"ClientDefaultChannel|{clientType}", channelType.ToString());
         }
 
         public AddonChannelType GetClientAddonChannelType(WowClientType clientType)
